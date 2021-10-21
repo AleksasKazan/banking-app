@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Models\" />
+    <None Remove="Models\Read\" />
+    <None Remove="Models\Write\" />
+    <None Remove="Models\Request\" />
+    <None Remove="Models\Response\" />
+    <None Remove="Enums\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Models\" />
+    <Folder Include="Models\Read\" />
+    <Folder Include="Models\Write\" />
+    <Folder Include="Models\Request\" />
+    <Folder Include="Models\Response\" />
+    <Folder Include="Enums\" />
+  </ItemGroup>
+</Project>

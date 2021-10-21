@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Clients\" />
+    <None Remove="Clients\Firebase\" />
+    <None Remove="Clients\Firebase\Models\" />
+    <None Remove="Clients\Firebase\Options\" />
+    <None Remove="Microsoft.Extensions.DependencyInjection" />
+    <None Remove="Microsoft.Extensions.Configuration" />
+    <None Remove="Microsoft.AspNetCore.Http" />
+    <None Remove="Services\" />
+    <None Remove="Microsoft.Extensions.Http" />
+    <None Remove="Microsoft.Extensions.Configuration.Binder" />
+    <None Remove="Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Clients\" />
+    <Folder Include="Clients\Firebase\" />
+    <Folder Include="Clients\Firebase\Models\" />
+    <Folder Include="Clients\Firebase\Options\" />
+    <Folder Include="Services\" />
+    <Folder Include="Exceptions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Persistence\Persistence.csproj" />
+  </ItemGroup>
+</Project>
