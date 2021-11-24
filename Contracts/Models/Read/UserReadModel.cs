@@ -3,7 +3,7 @@ namespace Contracts.Models.Read
 {
     public class UserReadModel
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
         public string Email { get; set; }
 
@@ -12,5 +12,7 @@ namespace Contracts.Models.Read
         public DateTime DateCreated { get; set; }
 
         public string UserName { get; set; }
+
+        public bool IsActive { get; set; }
     }
 }

@@ -25,7 +25,8 @@ namespace Persistence
                 .AddSingleton<IUsersRepository, UsersRepository>()
                 .AddSingleton<ITransactionsRepository, TransactionsRepository>()
                 .AddSingleton<IAccountsRepository, AccountsRepository>()
-                .AddSingleton<ICardsRepository, CardsRepository>();
+                .AddSingleton<ICardsRepository, CardsRepository>()
+                .AddSingleton<IFeesRepository, FeesRepository>();
         }
 
         private static IServiceCollection AddSqlClient(this IServiceCollection services, IConfiguration configuration)

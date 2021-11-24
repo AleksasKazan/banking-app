@@ -6,11 +6,11 @@ namespace Contracts.Models.Request
     public class TopUpRequestModel
     {
         [Required]
-        [Range(1, int.MaxValue, ErrorMessage = "Only positive number allowed")]
+        [Range(1, double.MaxValue, ErrorMessage = "Only positive number allowed")]
         public decimal Amount { get; set; }
 
         [Required]
-        [CreditCard]
+        //[CreditCard]
         public string CardNumber { get; set; }
 
         [Required]

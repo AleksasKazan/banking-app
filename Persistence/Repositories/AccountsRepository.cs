@@ -17,20 +17,25 @@ namespace Persistence.Repositories
 
         public Task<int> SaveOrUpdateAccount(AccountWriteModel account)
         {
-            var sql = @$"INSERT INTO {TableName} (AccountNumber, UserId, Balance, DateCreated)
-                        VALUES(@AccountNumber, @UserId, @Balance, @DateCreated)
+            var sql = @$"INSERT INTO {TableName} (Iban, UserId, Balance, DateCreated)
+                        VALUES(@Iban, @UserId, @Balance, @DateCreated)
             ON DUPLICATE KEY UPDATE Balance = @Balance";
 
             return _sqlClient.ExecuteAsync(sql, account);
         }
 
-        public Task<AccountReadModel> GetBalance(Guid userId)
+        public Task<AccountReadModel> GetAccount(Guid userId)
         {
             var sql = $"SELECT * FROM {TableName} WHERE UserId = @UserId";
-            return _sqlClient.QuerySingleOrDefaultAsync<AccountReadModel>(sql, new
-            {
-                UserId = userId
-            });
+
+            return _sqlClient.QuerySingleOrDefaultAsync<AccountReadModel>(sql, new { UserId = userId });
+        }
+
+        public Task<AccountReadModel> GetUserByIban(string iban)
+        {
+            var sql = @$"SELECT * FROM {TableName} WHERE Iban = @Iban";
+
+            return _sqlClient.QuerySingleOrDefaultAsync<AccountReadModel>(sql, new { Iban = iban });
         }
     }    
 }

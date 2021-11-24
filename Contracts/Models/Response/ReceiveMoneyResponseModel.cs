@@ -1,5 +1,4 @@
-﻿using System;
-using Contracts.Enums;
+﻿using Contracts.Enums;
 
 namespace Contracts.Models.Response
 {

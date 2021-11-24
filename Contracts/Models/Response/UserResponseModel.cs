@@ -45,5 +45,7 @@ namespace Contracts.Models.Response
 
     public class ChangePasswordResponseModel : UserResponseModel
     {
+        [JsonPropertyName("passwordHash")]
+        public string PasswordHash { get; set; }
     }
 }

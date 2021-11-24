@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Contracts.Enums;
 using Contracts.Models.Request;
 using Contracts.Models.Response;
 using Domain.Services;
@@ -31,16 +32,12 @@ namespace BankingApp.Controllers
         public async Task<ActionResult<TopUpResponseModel>> TopUp(TopUpRequestModel request)
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var response = await _transactionsService.TopUp(request, user.Id);
-            return Ok(new TopUpResponseModel
-            {
-                Amount = response.Amount,
-                Balance = response.Balance,
-                Type = response.Type,
-                Description = response.Description
-            });
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -49,34 +46,26 @@ namespace BankingApp.Controllers
         public async Task<ActionResult<TransferResponseModel>> Transfer(TransferRequestModel request)
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var response = await _transactionsService.Transfer(request, user.Id);
-            return Ok(new TransferResponseModel
-            {
-                Amount = response.Amount,
-                Balance = response.Balance,
-                Type = response.Type,
-                Description = response.Description
-            });
+
+            return Ok(response);
         }
 
         [Authorize]
         [HttpPost]
         [Route("sendMoney")]
-        public async Task<ActionResult<SendMoneyResponseModel>> Send(SendMoneyRequestModel request)
+        public async Task<ActionResult<TransferResponseModel>> Send(SendMoneyRequestModel request)
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var response = await _transactionsService.Send(request, user.Id);
-            return Ok(new SendMoneyResponseModel
-            {
-                Amount = response.Amount,
-                Balance = response.Balance,
-                Type = response.Type,
-                Description = response.Description
-            });
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -85,33 +74,26 @@ namespace BankingApp.Controllers
         public async Task<ActionResult<RequestMoneyResponseModel>> RequestMoney(ReceiveMoneyRequestModel request)
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var response = await _transactionsService.Request(request, user.Id);
-            return Ok(new RequestMoneyResponseModel
-            {
-                Amount = response.Amount,
-                Type = response.Type,
-                Description = response.Description
-            });
+
+            return Ok(response);
         }
 
         [Authorize]
         [HttpPost]
         [Route("confirmPending")]
-        public async Task<ActionResult<SendMoneyResponseModel>> ConfirmPending(ConfirmPendingRequestModel request)
+        public async Task<ActionResult<TransferResponseModel>> ConfirmPending(ConfirmPendingRequestModel request)
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var response = await _transactionsService.ConfirmPending(request, user.Id);
-            return Ok(new SendMoneyResponseModel
-            {
-                Amount = response.Amount,
-                Balance = response.Balance,
-                Type = response.Type,
-                Description = response.Description
-            });
+
+            return Ok(response);
         }
 
         [Authorize]
@@ -120,42 +102,58 @@ namespace BankingApp.Controllers
         public async Task<ActionResult<TransactionResponseModel>> GetTransactions()
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var transactions = await _transactionsRepository.GetAllTransactions(user.Id);
-            var response = transactions.Select(transaction => new TransactionResponseModel
-            {
-                Id = transaction.Id,
-                Amount = transaction.Amount,
-                CounterpartyId = transaction.CounterpartyId,
-                Description = transaction.Description,
-                TimeStamp = transaction.TimeStamp
-            });
-            return Ok(response);
+
+            return Ok(transactions);
         }
 
         [Authorize]
-        [HttpPost]
+        [HttpGet]
+        [Route("pendingRequests")]
+        public async Task<ActionResult<TransactionResponseModel>> GetPendingTransactions()
+        {
+            var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
+            var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
+
+            var pendingTransaction = await _transactionsRepository.GetTransactionsByType(user.Id, Transaction.Pending);
+
+            return Ok(pendingTransaction);
+        }
+
+        [Authorize]
+        [HttpGet]
         [Route("statement/sort")]
         public async Task<ActionResult<TransactionResponseModel>> GetTransactionsByDate([FromQuery]TransactionRequestModel requestModel)
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
             var transactions = await _transactionsRepository.GetAllTransactions(user.Id);
 
             var response = transactions
-                .Where(transaction => transaction.TimeStamp >= requestModel.TimeStampFrom && transaction.TimeStamp <= requestModel.TimeStampTo 
-                                    && transaction.Amount >= requestModel.AmountFrom && transaction.Amount <= requestModel.AmountTo)
-                .Select(transaction => new TransactionResponseModel
-            {
-                Id = transaction.Id,
-                Amount = transaction.Amount,
-                CounterpartyId = transaction.CounterpartyId,
-                Description = transaction.Description,
-                TimeStamp = transaction.TimeStamp
-            });
+                .Where(transaction => transaction.TimeStamp >= requestModel.TimeStampFrom && transaction.TimeStamp <= requestModel.TimeStampTo
+                                    && transaction.Amount >= requestModel.AmountFrom && transaction.Amount <= requestModel.AmountTo);
+
             return Ok(response);
-        }       
+        }
+
+        [Authorize]
+        [HttpGet]
+        [Route("balance")]
+        public async Task<ActionResult<string>> GetBalance()
+        {
+            var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
+            var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
+
+            var response = await _transactionsRepository.GetLastTransaction(user.Id);
+
+            return Ok(response is not null ? $"Current balance is: {response.Balance}" : $"Current balance is: {decimal.Zero}");
+        }
     }
 }

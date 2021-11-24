@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Domain.Clients.Firebase.Models
 {
@@ -34,5 +33,7 @@ namespace Domain.Clients.Firebase.Models
 
     public class ChangePasswordResponse : SignInResponse
     {
+        [JsonPropertyName("passwordHash")]
+        public string PasswordHash { get; set; }
     }
 }

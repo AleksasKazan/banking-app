@@ -9,6 +9,6 @@ namespace Contracts.Models.Request
         public string Email { get; set; }
 
         [Required]
-        public bool Confirm { get; set; }
+        public bool Confirm { get; set; } = true;
     }
 }

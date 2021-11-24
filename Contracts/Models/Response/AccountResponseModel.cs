@@ -1,5 +1,4 @@
-﻿using System;
-namespace Contracts.Models.Response
+﻿namespace Contracts.Models.Response
 {
     public class AccountResponseModel
     {

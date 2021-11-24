@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Contracts.Enums;
 using Contracts.Models.Read;
-using Contracts.Models.Request;
-using Contracts.Models.Response;
 using Contracts.Models.Write;
 
 namespace Persistence.Repositories
@@ -14,10 +13,10 @@ namespace Persistence.Repositories
 
         Task<IEnumerable<TransactionReadModel>> GetAllTransactions(Guid userId);
 
-        //Task<TransactionReadModel> GetTransactionByFirebaseId(string firebaseId);
+        Task<IEnumerable<TransactionReadModel>> GetTransactionsByType(Guid userId, Transaction transaction);
 
-        //Task<TransactionReadModel> GetTransaction(string userName, string password);
+        Task<TransactionReadModel> GetLastTransaction(Guid userId);
 
-        //Task<TransactionReadModel> GetTransactionByName(string userName);
+        Task<int> DeletePending(Guid id);
     }
 }

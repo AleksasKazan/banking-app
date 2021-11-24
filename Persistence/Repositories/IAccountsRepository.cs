@@ -9,6 +9,8 @@ namespace Persistence.Repositories
     {
         Task<int> SaveOrUpdateAccount(AccountWriteModel account);
 
-        Task<AccountReadModel> GetBalance(Guid userId);
+        Task<AccountReadModel> GetAccount(Guid userId);
+
+        Task<AccountReadModel> GetUserByIban(string iban);
     }
 }

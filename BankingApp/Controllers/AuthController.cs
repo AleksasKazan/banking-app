@@ -1,17 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Contracts.Models.Request;
 using Contracts.Models.Response;
-using Contracts.Models.Write;
-using Domain.Clients.Firebase;
-using Domain.Clients.Firebase.Models;
 using Domain.Exceptions;
 using Domain.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Persistence.Repositories;
 
 namespace BankingApp.Controllers
 {

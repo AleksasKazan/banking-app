@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Contracts.Models.Request
 {
@@ -57,6 +56,5 @@ namespace Contracts.Models.Request
         public string IdToken { get; set; }
 
         public string UserName { get; set; }
-
     }
 }

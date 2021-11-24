@@ -5,7 +5,7 @@ namespace Contracts.Models.Read
 {
     public class TransactionReadModel
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; init; }
 
         public Guid UserId { get; set; }
 
@@ -17,6 +17,12 @@ namespace Contracts.Models.Read
 
         public string Description { get; set; }
 
-        public DateTime TimeStamp { get; set; } 
+        public DateTime TimeStamp { get; set; }
+
+        public string Iban { get; set; }
+
+        public string CounterpartyIban { get; set; }
+
+        public decimal Balance { get; set; }
     }
 }

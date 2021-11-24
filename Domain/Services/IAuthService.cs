@@ -1,8 +1,6 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Contracts.Models.Request;
 using Contracts.Models.Response;
-using Domain.Clients.Firebase.Models;
 
 namespace Domain.Services
 {

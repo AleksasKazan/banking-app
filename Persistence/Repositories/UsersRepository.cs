@@ -19,15 +19,27 @@ namespace Persistence.Repositories
         public Task<IEnumerable<UserReadModel>> GetAllUsers()
         {
             var sql = $"SELECT * FROM {TableName}";
+
             return _sqlClient.QueryAsync<UserReadModel>(sql);
         }
 
         public Task<UserReadModel> GetUserByFirebaseId(string firebaseId)
         {
             var sql = $"SELECT * FROM {TableName} WHERE FirebaseId = @firebaseId";
+
             return _sqlClient.QuerySingleOrDefaultAsync<UserReadModel>(sql, new
             {
                 FirebaseId = firebaseId
+            });
+        }
+
+        public Task<UserReadModel> GetUserById(Guid id)
+        {
+            var sql = $"SELECT * FROM {TableName} WHERE Id = @id";
+
+            return _sqlClient.QuerySingleOrDefaultAsync<UserReadModel>(sql, new
+            {
+                Id = id
             });
         }
 
@@ -64,30 +76,27 @@ namespace Persistence.Repositories
 
         public Task<int> CreateUser(UserWriteModel user)
         {
-            var sql = @$"INSERT INTO {TableName} (Id, FirebaseId, Email, DateCreated, UserName)
-                        VALUES(@Id, @FirebaseId, @Email, @DateCreated, @UserName)
-            ON DUPLICATE KEY UPDATE Email = @Email";
+            var sql = @$"INSERT INTO {TableName} (Id, FirebaseId, Email, DateCreated, UserName, IsActive)
+                        VALUES(@Id, @FirebaseId, @Email, @DateCreated, @UserName, @IsActive)
+            ON DUPLICATE KEY UPDATE Email=@Email";
 
             return _sqlClient.ExecuteAsync(sql, user);
+        }
 
-            //return _sqlClient.ExecuteAsync(sql, new UserReadModel
-            //{
-            //    Id = user.Id,
-            //    FirebaseId = user.FirebaseId,
-            //    Email = user.Email,
-            //    DateCreated = user.DateCreated,
-            //    UserName = user.UserName
-            //});
+        public Task<int> DisableUser(UserWriteModel user)
+        {
+            var sql = @$"INSERT INTO {TableName} (Id, FirebaseId, Email, DateCreated, UserName, IsActive)
+                        VALUES(@Id, @FirebaseId, @Email, @DateCreated, @UserName, @IsActive)
+            ON DUPLICATE KEY UPDATE IsActive=@IsActive";
+
+            return _sqlClient.ExecuteAsync(sql, user);
         }
 
         public Task<int> DeleteUser(string email)
         {
-            var sql = $"DELETE FROM {TableName} WHERE Email = @Email";
+            var sql = $"DELETE FROM {TableName} WHERE Email=@Email";
 
-            return _sqlClient.ExecuteAsync(sql, new
-            {
-                Email = email
-            });
+            return _sqlClient.ExecuteAsync(sql, email);
         }
     }
 }

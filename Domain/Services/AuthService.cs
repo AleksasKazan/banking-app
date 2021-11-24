@@ -13,21 +13,26 @@ namespace Domain.Services
         private readonly IFireBaseClient _fireBaseClient;
         private readonly IUsersRepository _usersRepository;
         private readonly IAccountsRepository _accountsRepository;
+        private readonly ITransactionsRepository _transactionsRepository;
 
         public AuthService(IFireBaseClient fireBaseClient,
-            IUsersRepository usersRepository, IAccountsRepository accountsRepository)
+            IUsersRepository usersRepository, IAccountsRepository accountsRepository, ITransactionsRepository transactionsRepository)
         {
             _fireBaseClient = fireBaseClient;
             _usersRepository = usersRepository;
             _accountsRepository = accountsRepository;
+            _transactionsRepository = transactionsRepository;
         }
 
         public async Task<UserSignUpResponseModel> SignUpAsync(UserSignUpRequestModel request)
         {
             var user = await _fireBaseClient.SignUp(request);
+
             var accountNumber = "LT" + new Random().Next(0, 999999999).ToString()
                                     + new Random().Next(0, 999999999).ToString();
+
             var userId = Guid.NewGuid();
+
             var newUser = new UserWriteModel
             {
                 Id = userId,
@@ -35,17 +40,36 @@ namespace Domain.Services
                 Email = user.Email,
                 DateCreated = DateTime.Now,
                 UserName = request.UserName,
+                IsActive = true
             };
-            await _usersRepository.CreateUser(newUser);
 
             var newAccount = new AccountWriteModel
             {
-                AccountNumber = accountNumber,
+                Iban = accountNumber,
                 UserId = userId,
-                Balance = 0,
+                Balance = 0.00M,
                 DateCreated = DateTime.Now
             };
-            await _accountsRepository.SaveOrUpdateAccount(newAccount);
+
+            var newTransaction = new TransactionWriteModel
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                Amount = 0.00M,
+                CounterpartyId = Guid.Empty,
+                Type = Contracts.Enums.Transaction.Fees,
+                Description = $"Account {accountNumber} opening",
+                TimeStamp = DateTime.Now,
+                Balance = 0.00M,
+                Iban = accountNumber,
+                CounterpartyIban = string.Empty
+            };
+
+            await Task.WhenAll(
+                _usersRepository.CreateUser(newUser),
+                _accountsRepository.SaveOrUpdateAccount(newAccount),
+                _transactionsRepository.SaveOrUpdate(newTransaction));
+
             return new UserSignUpResponseModel
             {
                 Id = newUser.Id,
@@ -62,6 +86,7 @@ namespace Domain.Services
             var user = await _fireBaseClient.SignIn(request);
 
             var userSql = await _usersRepository.GetUserByFirebaseId(user.FirebaseId);
+
             return new UserSignInResponseModel
             {
                 UserName = userSql.UserName,
@@ -75,13 +100,23 @@ namespace Domain.Services
         {
             var user = await _fireBaseClient.SignIn(request);
             var resp = await _fireBaseClient.DeleteAccount(user.IdToken);
+            var response = await _usersRepository.GetUserByEmail(request.Email);
+            var updatedUser = new UserWriteModel
+            {
+                Id = response.Id,
+                FirebaseId = response.FirebaseId,
+                Email = response.Email,
+                UserName = response.UserName,
+                IsActive = !response.IsActive
+            };
+
             if (user.IdToken is not null)
             {
-                await _usersRepository.DeleteUser(request.Email);
+                await _usersRepository.DisableUser(updatedUser);
             }
             return new SuccessResponse
             {
-                Message = $"User {user.Email} have been deleted"
+                Message = $"User {user.Email} have been deleted / disabled"
             };
         }
 
@@ -89,10 +124,6 @@ namespace Domain.Services
         {
             var response = await _fireBaseClient.PasswordReset(request);
 
-            //if (response.Email is null)
-            //{
-            //    throw new Exception($"The email address {request.Email} was not found");
-            //}
             return new PasswordResetResponseModel
             {
                 Email = response.Email
@@ -103,37 +134,28 @@ namespace Domain.Services
         {
             var response = await _fireBaseClient.SignIn(request);
             var response2 = await _fireBaseClient.ChangeEmail(newEmail, response.IdToken);
-
-            //if (response.Email is null)
-            //{
-            //    throw new Exception($"The email address {request.Email} is already in use by another account");
-            //}
+            var user = await _usersRepository.GetUserByEmail(request.Email);
             var updatedUser = new UserWriteModel
             {
-                FirebaseId = response2.FirebaseId,
-                Email = newEmail,
-                UserName = newEmail
+                Id = user.Id,
+                Email = newEmail
             };
             await _usersRepository.CreateUser(updatedUser);
 
             return new ChangeEmailResponseModel
             {
-                Email = response.Email
+                Email = response2.Email
             };
         }
 
         public async Task<ChangePasswordResponseModel> ChangePassword(UserSignInRequestModel request, string newPassword)
         {
             var response = await _fireBaseClient.SignIn(request);
-            var response2 = await _fireBaseClient.ChangePassword(newPassword, response.IdToken);;
+            var response2 = await _fireBaseClient.ChangePassword(newPassword, response.IdToken);
 
-            //if (response.Email is null)
-            //{
-            //    throw new Exception($"The password {request.Password} is incorect");
-            //}
             return new ChangePasswordResponseModel
             {
-                Email = response.Email
+                PasswordHash = response2.PasswordHash
             };
         }
     }

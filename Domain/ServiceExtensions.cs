@@ -1,5 +1,4 @@
-﻿using System;
-using Domain.Clients.Firebase;
+﻿using Domain.Clients.Firebase;
 using Domain.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -25,8 +24,7 @@ namespace Domain
         {
             services
                 .AddSingleton<IAuthService, AuthService>()
-                .AddSingleton<ITransactionsService, TransactionsService>()
-                .AddSingleton<ICardsService, CardsService>();
+                .AddSingleton<ITransactionsService, TransactionsService>();
 
             return services;
         }

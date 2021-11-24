@@ -3,9 +3,9 @@ namespace Contracts.Models.Read
 {
     public class AccountReadModel
     {
-        public string AccountNumber { get; set; }
+        public string Iban { get; init; }
 
-        public Guid UserId { get; set; }
+        public Guid UserId { get; init; }
 
         public decimal Balance { get; set; }
 

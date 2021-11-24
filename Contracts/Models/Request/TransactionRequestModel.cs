@@ -5,16 +5,14 @@ namespace Contracts.Models.Request
 {
     public class TransactionRequestModel
     {
-        [Range(1, int.MaxValue, ErrorMessage = "Only positive number allowed")]
-        public decimal AmountFrom { get; set; }
+        public decimal AmountFrom { get; set; } = decimal.MinValue;
 
-        [Range(1, int.MaxValue, ErrorMessage = "Only positive number allowed")]
-        public decimal AmountTo { get; set; }
+        public decimal AmountTo { get; set; } = decimal.MaxValue;
 
         [Timestamp]
-        public DateTime TimeStampFrom { get; set; }
+        public DateTime TimeStampFrom { get; set; } = DateTime.MinValue;
 
         [Timestamp]
-        public DateTime TimeStampTo { get; set; }
+        public DateTime TimeStampTo { get; set; } = DateTime.Now;
     }
 }

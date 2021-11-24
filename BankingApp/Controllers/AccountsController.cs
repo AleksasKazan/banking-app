@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Contracts.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Persistence.Repositories;
@@ -23,17 +22,15 @@ namespace BankingApp.Controllers
         [Authorize]
         [HttpGet]
         [Route("balance")]
-        public async Task<ActionResult<AccountResponseModel>> GetBalance()
+        public async Task<ActionResult<string>> GetBalance()
         {
             var firebaseId = HttpContext.User.Claims.SingleOrDefault(claim => claim.Type == "user_id").Value;
+
             var user = await _usersRepository.GetUserByFirebaseId(firebaseId);
 
-            var response = await _accountsRepository.GetBalance(user.Id);
-            return Ok(new AccountResponseModel
-            {
-                AccountNumber = response.AccountNumber,
-                Balance = response.Balance
-            });
+            var account = await _accountsRepository.GetAccount(user.Id);
+
+            return Ok($"Your current balance is: {account.Balance}");
         }
     }
 }

@@ -71,6 +71,7 @@ namespace Domain.Clients.Firebase
             {
                 IdToken = idToken
             };
+
             var postJson = JsonSerializer.Serialize(post);
             var request = new HttpRequestMessage
             {
@@ -78,10 +79,10 @@ namespace Domain.Clients.Firebase
                 RequestUri = new Uri(url),
                 Content = new StringContent(postJson, Encoding.UTF8, "application/json")
             };
+
             var response = await _httpClient.SendAsync(request);
 
             return await response.Content.ReadFromJsonAsync<ErrorResponse>();
-
         }
 
         public async Task<PasswordResetResponse> PasswordReset(PasswordResetRequestModel user)
@@ -90,9 +91,9 @@ namespace Domain.Clients.Firebase
             var post = new ResetPasswordRequest
             {
                 Email = user.Email,
-                //requestType = "PASSWORD_RESET"
                 RequestType = user.RequestType
             };
+
             var postJson = JsonSerializer.Serialize(post);
             var request = new HttpRequestMessage
             {
@@ -100,10 +101,10 @@ namespace Domain.Clients.Firebase
                 RequestUri = new Uri(url),
                 Content = new StringContent(postJson, Encoding.UTF8, "application/json")
             };
+
             var response = await _httpClient.SendAsync(request);
 
             return await response.Content.ReadFromJsonAsync<PasswordResetResponse>();
-
         }
 
         public async Task<ChangeEmailResponse> ChangeEmail(string email, string idToken)
@@ -114,6 +115,7 @@ namespace Domain.Clients.Firebase
                 IdToken = idToken,
                 Email = email,
             };
+
             var postJson = JsonSerializer.Serialize(post);
             var request = new HttpRequestMessage
             {
@@ -121,10 +123,10 @@ namespace Domain.Clients.Firebase
                 RequestUri = new Uri(url),
                 Content = new StringContent(postJson, Encoding.UTF8, "application/json")
             };
+
             var response = await _httpClient.SendAsync(request);
 
             return await response.Content.ReadFromJsonAsync<ChangeEmailResponse>();
-
         }
 
         public async Task<ChangePasswordResponse> ChangePassword(string newPassword, string idToken)
@@ -135,17 +137,18 @@ namespace Domain.Clients.Firebase
                 Password = newPassword,
                 IdToken = idToken,
             };
+
             var postJson = JsonSerializer.Serialize(post);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Post,
-                RequestUri = new Uri(_httpClient.BaseAddress, url),
+                RequestUri = new Uri(url),
                 Content = new StringContent(postJson, Encoding.UTF8, "application/json")
             };
+
             var response = await _httpClient.SendAsync(request);
 
             return await response.Content.ReadFromJsonAsync<ChangePasswordResponse>();
-
         }
     }
 }

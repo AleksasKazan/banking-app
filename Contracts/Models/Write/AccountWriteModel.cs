@@ -3,7 +3,7 @@ namespace Contracts.Models.Write
 {
     public class AccountWriteModel
     {
-        public string AccountNumber { get; set; }
+        public string Iban { get; set; }
 
         public Guid UserId { get; set; }
 
